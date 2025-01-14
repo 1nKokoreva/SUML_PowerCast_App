@@ -1,0 +1,2 @@
+[console_scripts]
+ASI_ML = ASI_ML.__main__:main

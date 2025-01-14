@@ -1,0 +1,7 @@
+wandb/**
+src/ASI_ML/__pycache__/**
+AutogluonModels/**
+.venv/**
+data/06_models/**
+info.log
+*.pyc

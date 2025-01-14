@@ -1,0 +1,39 @@
+random_state: 42
+test_size: 0.3
+n_iter: 10
+cv_folds: 3
+
+hyperparameters:
+  LinearRegression:
+    fit_intercept: [true, false]
+    copy_X: [true, false]
+    n_jobs: [null, -1]
+    positive: [true, false]
+  DecisionTreeRegressor:
+    max_depth: [null, 10, 20, 30, 40, 50]
+    min_samples_split: [2, 5, 10, 15, 20]
+    min_samples_leaf: [1, 2, 4, 6, 8, 10]
+    max_features: ["sqrt", "log2", null]
+  RandomForestRegressor:
+    n_estimators: [50, 100, 150, 200, 250, 300]
+    max_depth: [null, 10, 20, 30, 40, 50]
+    min_samples_split: [2, 5, 10, 15]
+    min_samples_leaf: [1, 2, 4, 6, 8, 10]
+    max_features: ["sqrt", "log2"]
+    bootstrap: [true, false]
+
+autogluon:
+  time_limit: 3600
+  model_path: 'models/autogluon_model'
+  eval_metric: 'r2'
+
+wandb:
+  project: 'ASI_ML'
+  entity: 's24645-pjatk'
+
+db:
+  host: "localhost"
+  port: 3306
+  database: "PCP"
+  user: "root"
+  password: "admin"  

@@ -1,0 +1,16 @@
+power_consumption_raw_db:
+  type: pandas.SQLQueryDataset
+  sql: "SELECT * FROM powerconsumption"
+  credentials: db_credentials
+
+power_consumption_raw:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/powerconsumption.csv
+
+trained_models:
+  type: pickle.PickleDataset
+  filepath: data/06_models/trained_models.pkl
+
+model_metrics:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/model_metrics.csv

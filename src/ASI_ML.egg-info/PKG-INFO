@@ -1,0 +1,36 @@
+Metadata-Version: 2.1
+Name: ASI_ML
+Version: 0.1
+Description-Content-Type: text/markdown
+Requires-Dist: ipython>=8.10
+Requires-Dist: jupyterlab>=3.0
+Requires-Dist: notebook
+Requires-Dist: kedro~=0.19.9
+Requires-Dist: kedro[jupyter]
+Requires-Dist: kedro-datasets[pandas-csvdataset,pandas-exceldataset,pandas-parquetdataset]>=3.0; python_version >= "3.9"
+Requires-Dist: kedro-datasets[pandas.CSVDataset,pandas.ExcelDataset,pandas.ParquetDataset]>=1.0; python_version < "3.9"
+Requires-Dist: kedro-viz>=6.7.0
+Requires-Dist: scikit-learn<1.5,>=1.3.0
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: seaborn
+Requires-Dist: wandb
+Requires-Dist: autogluon.tabular>=1.0.0
+Provides-Extra: docs
+Requires-Dist: docutils<0.21; extra == "docs"
+Requires-Dist: sphinx<7.3,>=5.3; extra == "docs"
+Requires-Dist: sphinx_rtd_theme==2.0.0; extra == "docs"
+Requires-Dist: nbsphinx==0.8.1; extra == "docs"
+Requires-Dist: sphinx-autodoc-typehints==1.20.2; extra == "docs"
+Requires-Dist: sphinx_copybutton==0.5.2; extra == "docs"
+Requires-Dist: ipykernel<7.0,>=5.3; extra == "docs"
+Requires-Dist: Jinja2<3.2.0; extra == "docs"
+Requires-Dist: myst-parser<2.1,>=1.0; extra == "docs"
+Provides-Extra: dev
+Requires-Dist: pytest-cov~=3.0; extra == "dev"
+Requires-Dist: pytest-mock<2.0,>=1.7.1; extra == "dev"
+Requires-Dist: pytest~=7.2; extra == "dev"
+Requires-Dist: ruff~=0.1.8; extra == "dev"
+
+# ASI_ML

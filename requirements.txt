@@ -1,0 +1,15 @@
+ipython>=8.10
+jupyterlab>=3.0
+notebook
+kedro~=0.19.9
+kedro[jupyter]
+kedro-datasets[pandas-csvdataset, pandas-exceldataset, pandas-parquetdataset, pandas.sqlquerydataset ]>=3.0; python_version >= "3.9"
+kedro-datasets[pandas.CSVDataset, pandas.ExcelDataset, pandas.ParquetDataset, pandas.SQLQueryDataSet]>=1.0; python_version < "3.9"
+kedro-viz>=6.7.0
+scikit-learn<1.5,>=1.3.0
+pandas
+numpy
+matplotlib
+seaborn
+wandb
+autogluon.tabular>=1.0.0
