@@ -3,7 +3,7 @@ import tkinter.messagebox
 import customtkinter as ctk
 
 ctk.set_appearance_mode("dark")  # Modes: system (default), light, dark
-#ctk.set_default_color_theme("C:/Users/koka/Documents/GitHub/SUML_PowerCast_App/src/hemes/ed.json")
+ctk.set_default_color_theme("C:/Users/koka/Documents/GitHub/SUML_PowerCast_App/src/hemes/ed.json")
 # Themes: "blue" (standard), "green", "dark-blue"
 
 
