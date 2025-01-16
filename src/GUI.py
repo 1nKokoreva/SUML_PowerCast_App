@@ -1,54 +1,62 @@
 import tkinter
 import tkinter.messagebox
 import customtkinter as ctk
-
-ctk.set_appearance_mode("dark")  # Modes: system (default), light, dark
-ctk.set_default_color_theme("C:/Users/koka/Documents/GitHub/SUML_PowerCast_App/src/hemes/ed.json")
+from PIL import Image
+ctk.set_appearance_mode("light")  # Modes: system (default), light, dark
+ctk.set_default_color_theme("src\hemes\ed.json")
 # Themes: "blue" (standard), "green", "dark-blue"
-
+# "transparent" прозрачный
 
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
         # configure window
-        self.title("CustomTkinter complex_example.py")
+        self.title("SUML PowerCast.py")
         self.geometry(f"{1100}x{580}")
 
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
-        self.grid_columnconfigure((2, 3), weight=0)
+       # self.grid_columnconfigure((2, 3), weight=0)
         self.grid_rowconfigure((0, 1, 2), weight=1)
+        
 
         # create sidebar frame with widgets
-        self.sidebar_frame = ctk.CTkFrame(self, width=140, corner_radius=0)
-        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(4, weight=1)
-        self.logo_label = ctk.CTkLabel(self.sidebar_frame, text="CustomTkinter", font=ctk.CTkFont(size=20, weight="bold"))
+        self.left_menu = ctk.CTkFrame(self, width=140, corner_radius=21)
+        self.left_menu.grid(row=0, column=0, rowspan=5, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.left_menu.grid_rowconfigure(4, weight=1)
+        self.logo_label = ctk.CTkLabel(self.left_menu, text="PowerCast", font=ctk.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.sidebar_button_1 = ctk.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
-        self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-        self.sidebar_button_2 = ctk.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
-        self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
-        self.sidebar_button_3 = ctk.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
-        self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
-        self.appearance_mode_label = ctk.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
-        self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
-        self.appearance_mode_optionemenu = ctk.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"],
+
+        self.dowload_button = ctk.CTkButton(self.left_menu, text="Dowload CSV", command=self.sidebar_button_event)
+        self.dowload_button.grid(row=1, column=0, padx=20, pady=10)
+        self.train_button = ctk.CTkButton(self.left_menu, text="Train model", command=self.sidebar_button_event)
+        self.train_button.grid(row=2, column=0, padx=20, pady=10)
+
+        self.language_mode_label = ctk.CTkLabel(self.left_menu, text="Language:", anchor="w")
+        self.language_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
+        self.language_mode_optionemenu = ctk.CTkOptionMenu(self.left_menu, values=["PL", "ENG", "RU"],
                                                                        command=self.change_appearance_mode_event)
-        self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
-        self.scaling_label = ctk.CTkLabel(self.sidebar_frame, text="UI Scaling:", anchor="w")
-        self.scaling_label.grid(row=7, column=0, padx=20, pady=(10, 0))
-        self.scaling_optionemenu = ctk.CTkOptionMenu(self.sidebar_frame, values=["80%", "90%", "100%", "110%", "120%"],
+        self.language_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
+
+        self.appearance_mode_label = ctk.CTkLabel(self.left_menu, text="Appearance Mode:", anchor="w")
+        self.appearance_mode_label.grid(row=7, column=0, padx=20, pady=(10, 0))
+        self.appearance_mode_optionemenu = ctk.CTkOptionMenu(self.left_menu, values=["Light", "Dark", "System"],
+                                                                       command=self.change_appearance_mode_event)
+        self.appearance_mode_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 10))
+
+        self.scaling_label = ctk.CTkLabel(self.left_menu, text="UI Scaling:", anchor="w")
+        self.scaling_label.grid(row=9, column=0, padx=20, pady=(10, 0))
+        self.scaling_optionemenu = ctk.CTkOptionMenu(self.left_menu, values=["80%", "90%", "100%", "110%", "120%"],
                                                                command=self.change_scaling_event)
-        self.scaling_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 20))
+        self.scaling_optionemenu.grid(row=10, column=0, padx=20, pady=(10, 20))
 
         # create main entry and button
-        self.entry = ctk.CTkEntry(self, placeholder_text="CTkEntry")
-        self.entry.grid(row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+        # self.entry = ctk.CTkEntry(self, placeholder_text="CTkEntry")
+        # self.entry.grid(row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
-        self.main_button_1 = ctk.CTkButton(master=self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"))
-        self.main_button_1.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        # self.main_button_1 = ctk.CTkButton(master=self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"))
+        # self.main_button_1.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         # create textbox
         self.textbox = ctk.CTkTextbox(self, width=250)
@@ -127,7 +135,7 @@ class App(ctk.CTk):
         self.checkbox_3.grid(row=3, column=0, pady=20, padx=20, sticky="n")
 
         # set default values
-        self.sidebar_button_3.configure(state="disabled", text="Disabled CTkButton")
+        #self.sidebar_button_3.configure(state="disabled", text="RU/ENG")
         self.checkbox_3.configure(state="disabled")
         self.checkbox_1.select()
         self.scrollable_frame_switches[0].select()
