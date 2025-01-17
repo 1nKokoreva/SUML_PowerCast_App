@@ -13,7 +13,7 @@
     "border_color": ["#404040", "#F7F7F7"]
   },
   "CTkButton": {
-    "corner_radius": 27,
+    "corner_radius": 15,
     "border_width": 2,
     "fg_color": ["#72958F", "#72958F"],
     "hover_color": ["#91B9B2", "#5F7E79"],
@@ -23,7 +23,7 @@
   },
 
   "CTkLabel": {
-    "corner_radius": 6,
+    "corner_radius": 21,
     "fg_color": "transparent",
     "text_color": ["gray10", "#DCE4EE"]
   },
@@ -145,12 +145,12 @@
       "weight": "normal"
     },
     "Windows": {
-      "family": "Roboto",
+      "family": "Segoe UI",
       "size": 13,
       "weight": "normal"
     },
     "Linux": {
-      "family": "Roboto",
+      "family": "Segoe UI",
       "size": 13,
       "weight": "normal"
     }

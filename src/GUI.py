@@ -1,11 +1,10 @@
 import tkinter
 import tkinter.messagebox
 import customtkinter as ctk
-from PIL import Image
+from PIL import Image, ImageTk 
+
 ctk.set_appearance_mode("light")  # Modes: system (default), light, dark
 ctk.set_default_color_theme("src\hemes\ed.json")
-# Themes: "blue" (standard), "green", "dark-blue"
-# "transparent" прозрачный
 
 class App(ctk.CTk):
     def __init__(self):
@@ -17,141 +16,67 @@ class App(ctk.CTk):
 
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
-       # self.grid_columnconfigure((2, 3), weight=0)
         self.grid_rowconfigure((0, 1, 2), weight=1)
-        
 
         # create sidebar frame with widgets
-        self.left_menu = ctk.CTkFrame(self, width=140, corner_radius=21)
+        self.left_menu = ctk.CTkFrame(self, width=140)
         self.left_menu.grid(row=0, column=0, rowspan=5, padx=(20, 20), pady=(20, 20), sticky="nsew")
         self.left_menu.grid_rowconfigure(4, weight=1)
-        self.logo_label = ctk.CTkLabel(self.left_menu, text="PowerCast", font=ctk.CTkFont(size=20, weight="bold"))
-        self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
-        self.dowload_button = ctk.CTkButton(self.left_menu, text="Dowload CSV", command=self.sidebar_button_event)
-        self.dowload_button.grid(row=1, column=0, padx=20, pady=10)
-        self.train_button = ctk.CTkButton(self.left_menu, text="Train model", command=self.sidebar_button_event)
-        self.train_button.grid(row=2, column=0, padx=20, pady=10)
+        self.dowload_button = ctk.CTkButton(self.left_menu, height=37, text="Dowload CSV", font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"), command=self.sidebar_button_event)
+        self.dowload_button.grid(row=0, column=0, padx=20, pady=20)
+        self.train_button = ctk.CTkButton(self.left_menu, height=37, text="Train model", font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"), command=self.sidebar_button_event)
+        self.train_button.grid(row=1, column=0, padx=20, pady=10)
 
         self.language_mode_label = ctk.CTkLabel(self.left_menu, text="Language:", anchor="w")
         self.language_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
-        self.language_mode_optionemenu = ctk.CTkOptionMenu(self.left_menu, values=["PL", "ENG", "RU"],
-                                                                       command=self.change_appearance_mode_event)
+        self.language_mode_optionemenu = ctk.CTkOptionMenu(self.left_menu, values=["PL", "ENG", "RU"], font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
+                                                           command=self.change_appearance_mode_event)
         self.language_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
 
         self.appearance_mode_label = ctk.CTkLabel(self.left_menu, text="Appearance Mode:", anchor="w")
         self.appearance_mode_label.grid(row=7, column=0, padx=20, pady=(10, 0))
-        self.appearance_mode_optionemenu = ctk.CTkOptionMenu(self.left_menu, values=["Light", "Dark", "System"],
-                                                                       command=self.change_appearance_mode_event)
+        self.appearance_mode_optionemenu = ctk.CTkOptionMenu(self.left_menu, values=["Light", "Dark", "System"], font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
+                                                           command=self.change_appearance_mode_event)
         self.appearance_mode_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 10))
 
         self.scaling_label = ctk.CTkLabel(self.left_menu, text="UI Scaling:", anchor="w")
         self.scaling_label.grid(row=9, column=0, padx=20, pady=(10, 0))
-        self.scaling_optionemenu = ctk.CTkOptionMenu(self.left_menu, values=["80%", "90%", "100%", "110%", "120%"],
-                                                               command=self.change_scaling_event)
-        self.scaling_optionemenu.grid(row=10, column=0, padx=20, pady=(10, 20))
+        self.scaling_optionemenu = ctk.CTkOptionMenu(self.left_menu, values=["80%", "90%", "100%", "110%", "120%"], font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
+                                                     command=self.change_scaling_event)
+        self.scaling_optionemenu.grid(row=10, column=0, padx=20, pady=10)
 
-        # create main entry and button
-        # self.entry = ctk.CTkEntry(self, placeholder_text="CTkEntry")
-        # self.entry.grid(row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+        # Load background image
+        self.my_background_image = Image.open(r"src/Assets/background.jpg")
 
-        # self.main_button_1 = ctk.CTkButton(master=self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"))
-        # self.main_button_1.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        # Resize the image to fit the window size while maintaining aspect ratio
+        self.background_resized = self.my_background_image.resize((1100, 580), Image.Resampling.LANCZOS)  # Заменено на LANCZOS
 
-        # create textbox
-        self.textbox = ctk.CTkTextbox(self, width=250)
-        self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
+        # Convert the image to a format Tkinter can use
+        self.my_background = ImageTk.PhotoImage(self.background_resized)
 
-        # create tabview
-        self.tabview = ctk.CTkTabview(self, width=250)
-        self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
-        self.tabview.add("CTkTabview")
-        self.tabview.add("Tab 2")
-        self.tabview.add("Tab 3")
-        self.tabview.tab("CTkTabview").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
-        self.tabview.tab("Tab 2").grid_columnconfigure(0, weight=1)
+        # Create label for background image using grid
+        self.background_label = ctk.CTkLabel(self, image=self.my_background, corner_radius=21)
+        self.background_label.grid(row=3, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.background_label.grid_columnconfigure(0, weight=1)
+        self.background_label.grid_rowconfigure(0, weight=1)
 
-        self.optionmenu_1 = ctk.CTkOptionMenu(self.tabview.tab("CTkTabview"), dynamic_resizing=False,
-                                                        values=["Value 1", "Value 2", "Value Long Long Long"])
-        self.optionmenu_1.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.combobox_1 = ctk.CTkComboBox(self.tabview.tab("CTkTabview"),
-                                                    values=["Value 1", "Value 2", "Value Long....."])
-        self.combobox_1.grid(row=1, column=0, padx=20, pady=(10, 10))
-        self.string_input_button = ctk.CTkButton(self.tabview.tab("CTkTabview"), text="Open CTkInputDialog",
-                                                           command=self.open_input_dialog_event)
-        self.string_input_button.grid(row=2, column=0, padx=20, pady=(10, 10))
-        self.label_tab_2 = ctk.CTkLabel(self.tabview.tab("Tab 2"), text="CTkLabel on Tab 2")
-        self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)
+        # Create the layout for the three rows inside background_label
+        self.row1_radio_button1 = ctk.CTkRadioButton(self.background_label, text="Option 1", value=1)
+        self.row1_radio_button1.grid(row=0, column=0, padx=20, pady=10)
 
-        # create radiobutton frame
-        self.radiobutton_frame = ctk.CTkFrame(self)
-        self.radiobutton_frame.grid(row=0, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew")
-        self.radio_var = tkinter.IntVar(value=0)
-        self.label_radio_group = ctk.CTkLabel(master=self.radiobutton_frame, text="CTkRadioButton Group:")
-        self.label_radio_group.grid(row=0, column=2, columnspan=1, padx=10, pady=10, sticky="")
-        self.radio_button_1 = ctk.CTkRadioButton(master=self.radiobutton_frame, variable=self.radio_var, value=0)
-        self.radio_button_1.grid(row=1, column=2, pady=10, padx=20, sticky="n")
-        self.radio_button_2 = ctk.CTkRadioButton(master=self.radiobutton_frame, variable=self.radio_var, value=1)
-        self.radio_button_2.grid(row=2, column=2, pady=10, padx=20, sticky="n")
-        self.radio_button_3 = ctk.CTkRadioButton(master=self.radiobutton_frame, variable=self.radio_var, value=2)
-        self.radio_button_3.grid(row=3, column=2, pady=10, padx=20, sticky="n")
 
-        # create slider and progressbar frame
-        self.slider_progressbar_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.slider_progressbar_frame.grid(row=1, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
-        self.slider_progressbar_frame.grid_columnconfigure(0, weight=1)
-        self.slider_progressbar_frame.grid_rowconfigure(4, weight=1)
-        self.seg_button_1 = ctk.CTkSegmentedButton(self.slider_progressbar_frame)
-        self.seg_button_1.grid(row=0, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        self.progressbar_1 = ctk.CTkProgressBar(self.slider_progressbar_frame)
-        self.progressbar_1.grid(row=1, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        self.progressbar_2 = ctk.CTkProgressBar(self.slider_progressbar_frame)
-        self.progressbar_2.grid(row=2, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        self.slider_1 = ctk.CTkSlider(self.slider_progressbar_frame, from_=0, to=1, number_of_steps=4)
-        self.slider_1.grid(row=3, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        self.slider_2 = ctk.CTkSlider(self.slider_progressbar_frame, orientation="vertical")
-        self.slider_2.grid(row=0, column=1, rowspan=5, padx=(10, 10), pady=(10, 10), sticky="ns")
-        self.progressbar_3 = ctk.CTkProgressBar(self.slider_progressbar_frame, orientation="vertical")
-        self.progressbar_3.grid(row=0, column=2, rowspan=5, padx=(10, 20), pady=(10, 10), sticky="ns")
+        self.temperature_label = ctk.CTkLabel(self.background_label, text="Temperature", font=ctk.CTkFont(size=16, weight="bold"))
+        self.temperature_label.grid(row=1, column=0, columnspan=2, padx=20, pady=10)
 
-        # create scrollable frame
-        self.scrollable_frame = ctk.CTkScrollableFrame(self, label_text="CTkScrollableFrame")
-        self.scrollable_frame.grid(row=1, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
-        self.scrollable_frame.grid_columnconfigure(0, weight=1)
-        self.scrollable_frame_switches = []
-        for i in range(100):
-            switch = ctk.CTkSwitch(master=self.scrollable_frame, text=f"CTkSwitch {i}")
-            switch.grid(row=i, column=0, padx=10, pady=(0, 20))
-            self.scrollable_frame_switches.append(switch)
+        self.temperature_entry = ctk.CTkEntry(self.background_label)
+        self.temperature_entry.grid(row=2, column=0, columnspan=2, padx=20, pady=10)
 
-        # create checkbox and switch frame
-        self.checkbox_slider_frame = ctk.CTkFrame(self)
-        self.checkbox_slider_frame.grid(row=1, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew")
-        self.checkbox_1 = ctk.CTkCheckBox(master=self.checkbox_slider_frame)
-        self.checkbox_1.grid(row=1, column=0, pady=(20, 0), padx=20, sticky="n")
-        self.checkbox_2 = ctk.CTkCheckBox(master=self.checkbox_slider_frame)
-        self.checkbox_2.grid(row=2, column=0, pady=(20, 0), padx=20, sticky="n")
-        self.checkbox_3 = ctk.CTkCheckBox(master=self.checkbox_slider_frame)
-        self.checkbox_3.grid(row=3, column=0, pady=20, padx=20, sticky="n")
+        self.submit_button = ctk.CTkButton(self.background_label, text="Submit", command=self.sidebar_button_event)
+        self.submit_button.grid(row=3, column=0, columnspan=2, padx=20, pady=20)
 
-        # set default values
-        #self.sidebar_button_3.configure(state="disabled", text="RU/ENG")
-        self.checkbox_3.configure(state="disabled")
-        self.checkbox_1.select()
-        self.scrollable_frame_switches[0].select()
-        self.scrollable_frame_switches[4].select()
-        self.radio_button_3.configure(state="disabled")
-        self.appearance_mode_optionemenu.set("Dark")
+        self.appearance_mode_optionemenu.set("Light")
         self.scaling_optionemenu.set("100%")
-        self.optionmenu_1.set("CTkOptionmenu")
-        self.combobox_1.set("CTkComboBox")
-        self.slider_1.configure(command=self.progressbar_2.set)
-        self.slider_2.configure(command=self.progressbar_3.set)
-        self.progressbar_1.configure(mode="indeterminnate")
-        self.progressbar_1.start()
-        self.textbox.insert("0.0", "CTkTextbox\n\n" + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
-        self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
-        self.seg_button_1.set("Value 2")
 
     def open_input_dialog_event(self):
         dialog = ctk.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
@@ -166,7 +91,6 @@ class App(ctk.CTk):
 
     def sidebar_button_event(self):
         print("sidebar_button click")
-
 
 if __name__ == "__main__":
     app = App()
