@@ -58,4 +58,4 @@ def evaluate_models(predictors, X_test, Y_test, parameters):
 
     wandb.finish()
 
-    return results_df, best_models
+    return results_df, predictors

@@ -13,10 +13,10 @@ wandb
 autogluon.tabular>=1.0.0
 
 [:python_version < "3.9"]
-kedro-datasets[pandas.CSVDataset,pandas.ExcelDataset,pandas.ParquetDataset]>=1.0
+kedro-datasets[pandas.CSVDataset,pandas.ExcelDataset,pandas.ParquetDataset,pandas.SQLQueryDataSet]>=1.0
 
 [:python_version >= "3.9"]
-kedro-datasets[pandas-csvdataset,pandas-exceldataset,pandas-parquetdataset]>=3.0
+kedro-datasets[pandas-csvdataset,pandas-exceldataset,pandas-parquetdataset,pandas.sqlquerydataset]>=3.0
 
 [dev]
 pytest-cov~=3.0

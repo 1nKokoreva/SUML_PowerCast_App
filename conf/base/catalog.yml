@@ -7,9 +7,9 @@ power_consumption_raw:
   type: pandas.CSVDataset
   filepath: data/01_raw/powerconsumption.csv
 
-trained_models:
+best_models:
   type: pickle.PickleDataset
-  filepath: data/06_models/trained_models.pkl
+  filepath: data/06_models/best_models.pkl
 
 model_metrics:
   type: pandas.CSVDataset
