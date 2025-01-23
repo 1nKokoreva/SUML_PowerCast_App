@@ -12,7 +12,7 @@ import uvicorn
 from kedro.framework.hooks import _create_hook_manager
 from kedro.config import OmegaConfigLoader
 from kedro.framework.session import KedroSession
-
+from kedro.framework.startup import bootstrap_project
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
@@ -152,14 +152,16 @@ def start_api(best_models: Dict[str, TabularPredictor]):
         
     @app.post("/update", tags=["update"], status_code=200)
     async def update_model(input_data: WeatherInput):
+        bootstrap_project(".")
         getPredictions(input_data, best_models)
         
         try:
-            with KedroSession.create(project_path="C:\\Study\\4 year\\SUML\\SUML_PowerCast_App",
-        env="local") as session:
+            with KedroSession.create(project_path=".") as session:
                 session.run(pipeline_name="model_training")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Pipeline execution failed: {str(e)}")
+        
+        return {"message": "Pipeline executed successfully."}
 
 
     # Start the FastAPI server
