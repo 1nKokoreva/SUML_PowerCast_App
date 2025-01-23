@@ -7,20 +7,21 @@ from PIL import Image, ImageTk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+current_path = os.path.dirname(os.path.realpath(__file__))
+
 ctk.set_appearance_mode("light") 
-ctk.set_default_color_theme(r"C:/Users/koka/Documents/GitHub/SUML_PowerCast_App/src/themes/own_theme.json")
+ctk.set_default_color_theme(current_path + "/Assets/own_theme.json")
 
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        current_path = os.path.dirname(os.path.realpath(__file__))
+      
 
         self.title("PowerCast_App")
-        self.iconbitmap(current_path + "/Assets/iconic.ico")
-        self.geometry(f"{1000}x{680}")
-
-                
+        self.iconbitmap(current_path +"/Assets/iconic.ico")
+        self.geometry(f"{800}x{680}")
+    
         self.grid_rowconfigure((0,1), weight=0)  
         self.grid_rowconfigure( 2, weight=1)  
         self.grid_columnconfigure(0, weight=0)  
@@ -28,7 +29,7 @@ class App(ctk.CTk):
         #self.bg_image = ctk.CTkImage(Image.open(current_path + "/Assets/background.jpg"), size=(500, 250))
        
         # logo
-        self.logo_image = ctk.CTkImage(light_image=Image.open(current_path + "/Assets/PowerCast.png"),dark_image=Image.open(current_path+ "/Assets/PowerCast_white.png"), size=(380, 60))
+        self.logo_image = ctk.CTkImage(light_image=Image.open(current_path + "/Assets/PowerCast.png"),dark_image=Image.open(current_path + "/Assets/PowerCast_white.png"), size=(380, 60))
         self.logo_label = ctk.CTkLabel(self,  image=self.logo_image, text="")
         self.logo_label.grid(row=0, column=0, columnspan=2, padx=20, pady=(10, 10), sticky="nw")
 
@@ -72,7 +73,7 @@ class App(ctk.CTk):
         
         # Main frame
         self.center_frame = ctk.CTkFrame(self)
-        self.center_frame.grid(row=1, column=1, padx=40, pady=10, sticky="nsew")
+        self.center_frame.grid(row=1, column=1, padx=20, pady=10, sticky="nsew")
         self.center_frame.grid_rowconfigure(1, weight=1)
         self.center_frame.grid_rowconfigure((0, 2), weight=0)
         self.center_frame.grid_columnconfigure((0, 1), weight=1)
