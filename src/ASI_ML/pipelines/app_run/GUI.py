@@ -6,7 +6,7 @@ import customtkinter as ctk
 from PIL import Image, ImageTk 
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
+from dictionary import dictionery
 current_path = os.path.dirname(os.path.realpath(__file__))
 
 ctk.set_appearance_mode("light") 
@@ -16,18 +16,17 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-      
 
         self.title("PowerCast_App")
         self.iconbitmap(current_path +"/Assets/iconic.ico")
-        self.geometry(f"{800}x{680}")
+        self.geometry(f"{835}x{700}")
     
         self.grid_rowconfigure((0,1), weight=0)  
         self.grid_rowconfigure( 2, weight=1)  
         self.grid_columnconfigure(0, weight=0)  
         self.grid_columnconfigure((1, 2), weight=1) 
         #self.bg_image = ctk.CTkImage(Image.open(current_path + "/Assets/background.jpg"), size=(500, 250))
-       
+        self.language = "PL"
         # logo
         self.logo_image = ctk.CTkImage(light_image=Image.open(current_path + "/Assets/PowerCast.png"),dark_image=Image.open(current_path + "/Assets/PowerCast_white.png"), size=(380, 60))
         self.logo_label = ctk.CTkLabel(self,  image=self.logo_image, text="")
@@ -38,31 +37,31 @@ class App(ctk.CTk):
         self.left_menu.grid(row=1, column=0, rowspan=3, padx=(20, 20), pady=(10, 20), sticky="nsew")
         self.left_menu.grid_rowconfigure(4, weight=1)
 
-        self.download_button = ctk.CTkButton(self.left_menu, height=37, text="Download CSV",
+        self.download_button = ctk.CTkButton(self.left_menu, height=37, text=dictionery[self.language]["download_button"],
                                              font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
                                              command=self.sidebar_button_event)
         self.download_button.grid(row=0, column=0, padx=20, pady=10)
 
-        self.train_button = ctk.CTkButton(self.left_menu, height=37, text="Train model",
+        self.train_button = ctk.CTkButton(self.left_menu, height=37, text=dictionery[self.language]["train_button"],
                                           font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
                                           command=self.sidebar_button_event)
         self.train_button.grid(row=1, column=0, padx=20, pady=10)
 
-        self.language_mode_label = ctk.CTkLabel(self.left_menu, fg_color="transparent", text="Language:", anchor="w")
+        self.language_mode_label = ctk.CTkLabel(self.left_menu, fg_color="transparent", text=dictionery[self.language]["language"], anchor="w")
         self.language_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
         self.language_mode_optionemenu = ctk.CTkOptionMenu(self.left_menu, values=["PL", "ENG", "RU"],
                                                            font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
-                                                           command=self.change_appearance_mode_event)
+                                                           command=self.change_language)
         self.language_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
 
-        self.appearance_mode_label = ctk.CTkLabel(self.left_menu, fg_color="transparent", text="Appearance Mode:", anchor="w")
+        self.appearance_mode_label = ctk.CTkLabel(self.left_menu, fg_color="transparent", text=dictionery[self.language]["appearance_mode"], anchor="w")
         self.appearance_mode_label.grid(row=7, column=0, padx=20, pady=(10, 0))
         self.appearance_mode_optionemenu = ctk.CTkOptionMenu(self.left_menu, values=["Light", "Dark"],
                                                              font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
                                                              command=self.change_appearance_mode_event)
         self.appearance_mode_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 10))
 
-        self.scaling_label = ctk.CTkLabel(self.left_menu, fg_color="transparent", text="UI Scaling:", anchor="w")
+        self.scaling_label = ctk.CTkLabel(self.left_menu, fg_color="transparent", text=dictionery[self.language]["ui_scale"], anchor="w")
         self.scaling_label.grid(row=9, column=0, padx=20, pady=(10, 0))
         self.scaling_optionemenu = ctk.CTkOptionMenu(self.left_menu, values=["80%", "90%", "100%", "110%", "120%"],
                                                      font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
@@ -89,32 +88,32 @@ class App(ctk.CTk):
 
         # Temperature
         #self.humidity = ctk.CTkSlider(self.entry_frame, from_=0, to=100, command=self.slider_event)
-        self.temperature_label = ctk.CTkLabel(self.entry_frame, text="Temperature:", anchor="w")
+        self.temperature_label = ctk.CTkLabel(self.entry_frame, text=dictionery[self.language]["temperature"], anchor="w")
         self.temperature_label.grid(row=0, column=0, padx=2, pady=0, sticky="w")
         self.temperature = ctk.CTkEntry(self.entry_frame, placeholder_text="6.58")
         self.temperature.grid(row=0, column=1, padx=5, pady=(0, 3), sticky="ew")
 
         # Humidity
-        self.humidity_label = ctk.CTkLabel(self.entry_frame, text="Humidity:", anchor="w")
+        self.humidity_label = ctk.CTkLabel(self.entry_frame, text=dictionery[self.language]["humidity"], anchor="w")
         self.humidity_label.grid(row=1, column=0, padx=2, pady=0, sticky="w")  
         self.humidity = ctk.CTkEntry(self.entry_frame, placeholder_text="77.5")
         self.humidity.grid(row=1, column=1, padx=5, pady=(0, 3), sticky="ew")  
 
 
         # Wind Speed
-        self.wind_speed_label = ctk.CTkLabel(self.entry_frame, text="Wind Speed(m/s):", anchor="w")
+        self.wind_speed_label = ctk.CTkLabel(self.entry_frame, text=dictionery[self.language]["wind_speed"], anchor="w")
         self.wind_speed_label.grid(row=2, column=0, padx=2, pady=0, sticky="w")
         self.wind_speed = ctk.CTkEntry(self.entry_frame, placeholder_text="0.077")
         self.wind_speed.grid(row=2, column=1, padx=5, pady=(0, 3), sticky="ew")
 
         # General Diffuse Flows
-        self.general_diffuse_flows_label = ctk.CTkLabel(self.entry_frame, text="General diffuse flows:", anchor="w")
+        self.general_diffuse_flows_label = ctk.CTkLabel(self.entry_frame, text=dictionery[self.language]["general_flows"], anchor="w")
         self.general_diffuse_flows_label.grid(row=3, column=0, padx=2, pady=0, sticky="w")
         self.general_diffuse_flows = ctk.CTkEntry(self.entry_frame, placeholder_text="208.8")
         self.general_diffuse_flows.grid(row=3, column=1, padx=5, pady=(0, 3), sticky="ew")
 
         # Diffuse Flows
-        self.diffuse_flows_label = ctk.CTkLabel(self.entry_frame, text="Diffuse flows:", anchor="w")
+        self.diffuse_flows_label = ctk.CTkLabel(self.entry_frame, text=dictionery[self.language]["flows"], anchor="w")
         self.diffuse_flows_label.grid(row=4, column=0, padx=2, pady=0, sticky="w")
         self.diffuse_flows = ctk.CTkEntry(self.entry_frame, placeholder_text="35.29")
         self.diffuse_flows.grid(row=4, column=1, padx=5, pady=(0, 5), sticky="ew")
@@ -125,29 +124,29 @@ class App(ctk.CTk):
         self.checkbox_frame.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
 
 
-        self.checkbox_label = ctk.CTkLabel(self.checkbox_frame, text="Select the necessary zones")
+        self.checkbox_label = ctk.CTkLabel(self.checkbox_frame, text=dictionery[self.language]["necessary_zone"])
         self.checkbox_label.grid(row=0, column=0, padx=5, pady=0, sticky="n")
 
        
         #self.checkboxes["Zone 1"].get(), который вернёт 1 (активен) или 0 (неактивен).
         self.radio_var = tkinter.IntVar(value=1)
-        self.checkboxes1 = ctk.CTkRadioButton(self.checkbox_frame, variable=self.radio_var, value=1, text="Zone 1")
-        self.checkboxes1.grid(row=1, column=0, padx=20, pady=2, sticky="w")
+        self.zone_1 = ctk.CTkRadioButton(self.checkbox_frame, variable=self.radio_var, value=1, text=dictionery[self.language]["zone_one"])
+        self.zone_1.grid(row=1, column=0, padx=20, pady=2, sticky="w")
 
-        self.checkboxes2 = ctk.CTkRadioButton(self.checkbox_frame,  variable=self.radio_var, value=2, text="Zone 2")
-        self.checkboxes2.grid(row=2, column=0, padx=20, pady=2, sticky="w")
+        self.zone_2 = ctk.CTkRadioButton(self.checkbox_frame,  variable=self.radio_var, value=2, text=dictionery[self.language]["zone_two"])
+        self.zone_2.grid(row=2, column=0, padx=20, pady=2, sticky="w")
  
-        self.checkboxes3 = ctk.CTkRadioButton(self.checkbox_frame,  variable=self.radio_var, value=3, text="Zone 3")
-        self.checkboxes3.grid(row=3, column=0, padx=20, pady=2, sticky="w")
+        self.zone_3 = ctk.CTkRadioButton(self.checkbox_frame,  variable=self.radio_var, value=3, text=dictionery[self.language]["zone_three"])
+        self.zone_3.grid(row=3, column=0, padx=20, pady=2, sticky="w")
 
-        self.checkboxes4 = ctk.CTkRadioButton(self.checkbox_frame,  variable=self.radio_var, value=0, text="All")
-        self.checkboxes4.grid(row=4, column=0, padx=20, pady=2, sticky="w")
+        self.zones_all = ctk.CTkRadioButton(self.checkbox_frame,  variable=self.radio_var, value=0, text=dictionery[self.language]["all_zones"])
+        self.zones_all.grid(row=4, column=0, padx=20, pady=2, sticky="w")
 
             
-        self.button = ctk.CTkButton(self.center_frame,  height=37,  text="Predict",
+        self.predict_button = ctk.CTkButton(self.center_frame,  height=37,  text=dictionery[self.language]["predict_button"],
                                              font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
                                              command=self.check_number_format)
-        self.button.grid(row=2, column=0, columnspan=2, pady=7, padx=7)
+        self.predict_button.grid(row=2, column=0, columnspan=2, pady=7, padx=7)
 
         #graph 
         self.graph_frame = ctk.CTkFrame(self)
@@ -187,8 +186,42 @@ class App(ctk.CTk):
         #
         self.appearance_mode_optionemenu.set("Light")
         self.scaling_optionemenu.set("100%")
-        self.info_label.insert("0.0", "Aplikacja umożliwia przewidywanie zużycia energii elektrycznej w gospodarstwie domowym na podstawie danych pogodowych i strefy docelowej. Dzięki temu użytkownicy mogą lepiej planować zużycie energii, optymalizować koszty oraz unikać przeciążeń w sieci energetycznej.")
+        self.info_label.insert("1.0", dictionery[self.language]["info_text"])
         self.info_label.configure(state="disabled")
+        self.update_texts()
+
+        
+
+    def update_texts(self):
+    # Обновляем текст всех элементов в интерфейсе
+        if hasattr(self, 'language'):
+            self.download_button.configure(text=dictionery[self.language]["download_button"])
+            self.train_button.configure(text=dictionery[self.language]["train_button"])
+            self.language_mode_label.configure(text=dictionery[self.language]["language"])
+            self.appearance_mode_label.configure(text=dictionery[self.language]["appearance_mode"])
+            self.scaling_label.configure(text=dictionery[self.language]["ui_scale"])
+            self.temperature_label.configure(text=dictionery[self.language]["temperature"])
+            self.humidity_label.configure(text=dictionery[self.language]["humidity"])
+            self.wind_speed_label.configure(text=dictionery[self.language]["wind_speed"])
+            self.general_diffuse_flows_label.configure(text=dictionery[self.language]["general_flows"])
+            self.diffuse_flows_label.configure(text=dictionery[self.language]["flows"])
+            self.checkbox_label.configure(text=dictionery[self.language]["necessary_zone"])
+            self.zone_1.configure(text=dictionery[self.language]["zone_one"])
+            self.zone_2.configure(text=dictionery[self.language]["zone_two"])
+            self.zone_3.configure(text=dictionery[self.language]["zone_three"])
+            self.zones_all.configure(text=dictionery[self.language]["all_zones"])
+            self.predict_button.configure(text=dictionery[self.language]["predict_button"])
+
+            self.info_label.configure(state="normal")  # Разрешите редактирование
+            self.info_label.delete("1.0", "end")  # Очистка старого текста
+            self.info_label.insert("1.0", dictionery[self.language]["info_text"])  # Вставка нового текста
+            self.info_label.configure(state="disabled")  # Запретите редактирование
+
+    def change_language(self, new_language):
+        self.language = new_language
+        self.update_texts()
+
+    
 
     def check_number_format(self):
         pattern = r"^\d{1,3}([.]\d{1,3})?$"
