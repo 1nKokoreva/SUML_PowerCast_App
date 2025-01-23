@@ -5,3 +5,5 @@ AutogluonModels/**
 data/06_models/**
 info.log
 *.pyc
+data/01_raw/powerconsumption.csv
+data/08_reporting/model_metrics.csv

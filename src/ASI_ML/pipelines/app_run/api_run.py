@@ -3,7 +3,7 @@ import os
 from kedro.framework.context import KedroContext
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from autogluon.tabular import TabularPredictor
 from multiprocessing import Process
 from datetime import datetime
@@ -28,7 +28,7 @@ class WeatherInput(BaseModel):
     wind_speed: float
     general_diffuse_flows: float
     diffuse_flows: float
-    target_zone: Optional[int] = None  # Zone to predict; 1, 2, or 3
+    target_zones: Optional[List[int]] = None  # Zone to predict; 1, 2, or 3
 
 def format_datetime_for_file(input_datetime: str) -> str:
     """
@@ -97,10 +97,22 @@ def getPredictions(input_data: WeatherInput, best_models: Dict[str, TabularPredi
     }])
 
     # Predict for the specified zone or all zones
-    predictions = {
+    all_predictions = {
         zone: model.predict(X_new).tolist()
         for zone, model in best_models.items()
     }
+
+    if input_data.target_zones:
+        filtered_predictions = {}
+        for zone in input_data.target_zones:
+            zone_key = f"PowerConsumption_Zone{zone}"
+            if zone_key not in best_models:
+                raise HTTPException(status_code=404, detail=f"Model for {zone_key} not found.")
+            filtered_predictions[zone_key] = all_predictions[zone_key]
+        predictions = filtered_predictions
+    else:
+        # If no target_zones specified, predict for all zones
+        predictions = all_predictions
 
     # Insert the prediction data into the database
     data_to_insert = {
@@ -110,22 +122,16 @@ def getPredictions(input_data: WeatherInput, best_models: Dict[str, TabularPredi
         "WindSpeed": input_data.wind_speed,
         "GeneralDiffuseFlows": input_data.general_diffuse_flows,
         "DiffuseFlows": input_data.diffuse_flows,
-        "PowerConsumption_Zone1": predictions.get("PowerConsumption_Zone1", [None])[0],
-        "PowerConsumption_Zone2": predictions.get("PowerConsumption_Zone2", [None])[0],
-        "PowerConsumption_Zone3": predictions.get("PowerConsumption_Zone3", [None])[0],
+        "PowerConsumption_Zone1": all_predictions.get("PowerConsumption_Zone1", [None])[0],
+        "PowerConsumption_Zone2": all_predictions.get("PowerConsumption_Zone2", [None])[0],
+        "PowerConsumption_Zone3": all_predictions.get("PowerConsumption_Zone3", [None])[0],
     }
 
 
     append_to_csv("data/01_raw/powerconsumption.csv", data_to_insert)
     insert_into_database(data_to_insert)
-        
-    if input_data.target_zone:
-        zone_key = f"PowerConsumption_Zone{input_data.target_zone}"
-        if zone_key not in best_models:
-            raise HTTPException(status_code=404, detail=f"Model for {zone_key} not found.")
-        return {"zone": input_data.target_zone, "prediction": predictions[zone_key]}
-    else:
-        return {"predictions": predictions}
+
+    return {"predictions": predictions}
 
 def start_api(best_models: Dict[str, TabularPredictor]):
     """
