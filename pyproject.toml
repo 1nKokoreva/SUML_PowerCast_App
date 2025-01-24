@@ -3,12 +3,12 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ASI_ML"
+name = "SUML_PowerCast_App"
 readme = "README.md"
 dynamic = ["dependencies", "version"]
 
 [project.scripts]
-ASI_ML = "ASI_ML.__main__:main"
+SUML_PowerCast_App = "SUML_PowerCast_App.__main__:main"
 
 [project.entry-points."kedro.hooks"]
 
@@ -33,14 +33,14 @@ dev = [
 
 [tool.setuptools.dynamic]
 dependencies = {file = "requirements.txt"}
-version = {attr = "ASI_ML.__version__"}
+version = {attr = "SUML_PowerCast_App.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
 namespaces = false
 
 [tool.kedro]
-package_name = "ASI_ML"
+package_name = "SUML_PowerCast_App"
 project_name = "SolarDefender"
 kedro_init_version = "0.19.9"
 tools = ['None']
@@ -50,7 +50,7 @@ source_dir = "src"
 [tool.pytest.ini_options]
 addopts = """
 --cov-report term-missing \
---cov src/ASI_ML -ra"""
+--cov src/SUML_PowerCast_App -ra"""
 
 [tool.coverage.report]
 fail_under = 0

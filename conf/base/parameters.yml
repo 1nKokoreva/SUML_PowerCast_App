@@ -28,7 +28,7 @@ autogluon:
   eval_metric: 'r2'
 
 wandb:
-  project: 'ASI_ML'
+  project: 'SUML_PowerCast_App'
   entity: 's24645-pjatk'
 
 db:

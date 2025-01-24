@@ -1,5 +1,5 @@
 Metadata-Version: 2.2
-Name: ASI_ML
+Name: SUML_PowerCast_App
 Version: 0.1
 Description-Content-Type: text/markdown
 Requires-Dist: ipython>=8.10
