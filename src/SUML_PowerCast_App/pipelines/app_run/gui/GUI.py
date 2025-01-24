@@ -7,6 +7,9 @@ from PIL import Image, ImageTk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from dictionary import dictionery
+import requests
+from datetime import datetime
+
 current_path = os.path.dirname(os.path.realpath(__file__))
 
 ctk.set_appearance_mode("light") 
@@ -145,7 +148,7 @@ class App(ctk.CTk):
             
         self.predict_button = ctk.CTkButton(self.center_frame,  height=37,  text=dictionery[self.language]["predict_button"],
                                              font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
-                                             command=self.check_number_format)
+                                             command=self.predict)
         self.predict_button.grid(row=2, column=0, columnspan=2, pady=7, padx=7)
 
         #graph 
@@ -263,6 +266,37 @@ class App(ctk.CTk):
 
     def sidebar_button_event(self):
         print("Sidebar button clicked")
+
+
+    ############### Event handler для кнопки предикшина
+    def predict(self):
+        try:
+            data = {
+                "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "temperature": float(self.temperature.get()),
+                "humidity": float(self.humidity.get()),
+                "wind_speed": float(self.wind_speed.get()),
+                "general_diffuse_flows": float(self.general_diffuse_flows.get()),
+                "diffuse_flows": float(self.diffuse_flows.get()),
+                "target_zones": self.get_target_zones(),
+            }
+        except ValueError:
+            messagebox.showerror("Error", "Please enter valid numeric values in all fields.")
+            return
+
+        # Отправка данных на API
+        try:
+            response = requests.post("http://localhost:8000/predict", json=data)
+            response.raise_for_status()
+            result = response.json()
+            messagebox.showinfo("Prediction Result", f"Prediction: {result}")
+        except requests.RequestException as e:
+            messagebox.showerror("API Error", f"Failed to fetch prediction: {e}")
+
+    def get_target_zones(self):
+        if self.radio_var.get() == 0:
+            return [1, 2, 3]
+        return [self.radio_var.get()]
 
 if __name__ == "__main__":
     app = App()
