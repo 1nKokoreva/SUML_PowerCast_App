@@ -4,7 +4,7 @@ def create_pipeline(**kwargs):
     return Pipeline([
         node(
             func=perform_analysis,
-            inputs="power_consumption_raw_db",
+            inputs="power_consumption_raw",
             outputs=None,
             name="perform_analysis_node"
         )
