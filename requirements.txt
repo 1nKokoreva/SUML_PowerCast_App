@@ -10,6 +10,7 @@ scikit-learn<1.5,>=1.3.0
 pandas
 numpy
 matplotlib
+pymysql
 seaborn
 wandb
 autogluon.tabular>=1.0.0

@@ -129,7 +129,7 @@ def getPredictions(input_data: WeatherInput, best_models: Dict[str, TabularPredi
 
 
     append_to_csv("data/01_raw/powerconsumption.csv", data_to_insert)
-    insert_into_database(data_to_insert)
+    #insert_into_database(data_to_insert)
 
     return {"predictions": predictions}
 
@@ -150,10 +150,9 @@ def start_api(best_models: Dict[str, TabularPredictor]):
     async def get_predictions(input_data: WeatherInput):
         return getPredictions(input_data, best_models)
         
-    @app.post("/update", tags=["update"], status_code=200)
-    async def update_model(input_data: WeatherInput):
+    @app.get("/update", tags=["update"], status_code=200)
+    async def update_model():
         bootstrap_project(".")
-        getPredictions(input_data, best_models)
         
         try:
             with KedroSession.create(project_path=".") as session:
