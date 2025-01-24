@@ -1,2 +1,2 @@
 [console_scripts]
-ASI_ML = ASI_ML.__main__:main
+SUML_PowerCast_App = SUML_PowerCast_App.__main__:main

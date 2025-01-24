@@ -1,5 +1,5 @@
 wandb/**
-src/ASI_ML/__pycache__/**
+src/SUML_PowerCast_App/__pycache__/**
 AutogluonModels/**
 .venv/**
 data/06_models/**
