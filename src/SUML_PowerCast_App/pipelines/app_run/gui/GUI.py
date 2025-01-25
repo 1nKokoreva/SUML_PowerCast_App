@@ -22,10 +22,10 @@ class App(ctk.CTk):
 
         self.title("PowerCast_App")
         self.iconbitmap(current_path +"/Assets/iconic.ico")
-        self.geometry(f"{835}x{700}")
+        self.geometry(f"{880}x{700}")
     
-        self.grid_rowconfigure((0,1), weight=0)  
-        self.grid_rowconfigure( 2, weight=1)  
+        self.grid_rowconfigure((0,1,2), weight=0)  
+        self.grid_rowconfigure( 3, weight=1)  
         self.grid_columnconfigure(0, weight=0)  
         self.grid_columnconfigure((1, 2), weight=1) 
         #self.bg_image = ctk.CTkImage(Image.open(current_path + "/Assets/background.jpg"), size=(500, 250))
@@ -131,19 +131,18 @@ class App(ctk.CTk):
         self.checkbox_label.grid(row=0, column=0, padx=5, pady=0, sticky="n")
 
        
-        #self.checkboxes["Zone 1"].get(), который вернёт 1 (активен) или 0 (неактивен).
-        self.radio_var = tkinter.IntVar(value=1)
-        self.zone_1 = ctk.CTkRadioButton(self.checkbox_frame, variable=self.radio_var, value=1, text=dictionery[self.language]["zone_one"])
+        self.zone_1_var = tkinter.BooleanVar(value=False)
+        self.zone_2_var = tkinter.BooleanVar(value=False)
+        self.zone_3_var = tkinter.BooleanVar(value=False)
+
+        self.zone_1 = ctk.CTkCheckBox(self.checkbox_frame, variable=self.zone_1_var, text=dictionery[self.language]["zone_one"])
         self.zone_1.grid(row=1, column=0, padx=20, pady=2, sticky="w")
 
-        self.zone_2 = ctk.CTkRadioButton(self.checkbox_frame,  variable=self.radio_var, value=2, text=dictionery[self.language]["zone_two"])
+        self.zone_2 = ctk.CTkCheckBox(self.checkbox_frame, variable=self.zone_2_var, text=dictionery[self.language]["zone_two"])
         self.zone_2.grid(row=2, column=0, padx=20, pady=2, sticky="w")
- 
-        self.zone_3 = ctk.CTkRadioButton(self.checkbox_frame,  variable=self.radio_var, value=3, text=dictionery[self.language]["zone_three"])
-        self.zone_3.grid(row=3, column=0, padx=20, pady=2, sticky="w")
 
-        self.zones_all = ctk.CTkRadioButton(self.checkbox_frame,  variable=self.radio_var, value=0, text=dictionery[self.language]["all_zones"])
-        self.zones_all.grid(row=4, column=0, padx=20, pady=2, sticky="w")
+        self.zone_3 = ctk.CTkCheckBox(self.checkbox_frame, variable=self.zone_3_var, text=dictionery[self.language]["zone_three"])
+        self.zone_3.grid(row=3, column=0, padx=20, pady=2, sticky="w")
 
             
         self.predict_button = ctk.CTkButton(self.center_frame,  height=37,  text=dictionery[self.language]["predict_button"],
@@ -151,9 +150,14 @@ class App(ctk.CTk):
                                              command=self.predict)
         self.predict_button.grid(row=2, column=0, columnspan=2, pady=7, padx=7)
 
+        self.label_frame = ctk.CTkFrame(self)
+        self.label_frame.grid(row=2, column=1, padx=20, pady=10, sticky="nsew")
+        self.result_label = ctk.CTkLabel(self.label_frame, fg_color=["#F7F7F7", "gray17"], wraplength= 500, text=dictionery[self.language]["result"])
+        self.result_label.grid(row=0, column=0, padx=10, pady=10)
+                
         #graph 
         self.graph_frame = ctk.CTkFrame(self)
-        self.graph_frame.grid(row=2, column=1, pady=20, padx=40, sticky="nsew")
+        self.graph_frame.grid(row=3, column=1, pady=20, padx=20, sticky="nsew")
         
         #graph Matplotlib example
         self.fig = Figure(figsize=(5, 5), dpi=100)
@@ -212,8 +216,8 @@ class App(ctk.CTk):
             self.zone_1.configure(text=dictionery[self.language]["zone_one"])
             self.zone_2.configure(text=dictionery[self.language]["zone_two"])
             self.zone_3.configure(text=dictionery[self.language]["zone_three"])
-            self.zones_all.configure(text=dictionery[self.language]["all_zones"])
             self.predict_button.configure(text=dictionery[self.language]["predict_button"])
+            self.result_label.configure(text=dictionery[self.language]["result"])
 
             self.info_label.configure(state="normal")  # Разрешите редактирование
             self.info_label.delete("1.0", "end")  # Очистка старого текста
@@ -289,14 +293,19 @@ class App(ctk.CTk):
             response = requests.post("http://localhost:8000/predict", json=data)
             response.raise_for_status()
             result = response.json()
-            messagebox.showinfo("Prediction Result", f"Prediction: {result}")
+            self.result_label.configure(text=f"{dictionery[self.language]['result']} {result}")
         except requests.RequestException as e:
             messagebox.showerror("API Error", f"Failed to fetch prediction: {e}")
 
     def get_target_zones(self):
-        if self.radio_var.get() == 0:
-            return [1, 2, 3]
-        return [self.radio_var.get()]
+        zones = []
+        if self.zone_1_var.get():
+            zones.append(1)
+        if self.zone_2_var.get():
+            zones.append(2)
+        if self.zone_3_var.get():
+            zones.append(3)
+        return zones
 
 if __name__ == "__main__":
     app = App()
