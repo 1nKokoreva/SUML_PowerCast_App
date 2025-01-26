@@ -43,6 +43,7 @@ class App(ctk.CTk):
         Initialize the GUI components and set up the main interface layout.
         """
         super().__init__()
+        self.show_instruction()
 
         self.title("PowerCast_App")
         self.iconbitmap(os.path.join(CURRENT_PATH, "Assets", "iconic.ico"))
@@ -86,6 +87,15 @@ class App(ctk.CTk):
             command=self.sidebar_button_event
         )
         self.train_button.grid(row=1, column=0, padx=20, pady=10)
+
+        self.update_graph_button = ctk.CTkButton(
+            self.left_menu,
+            height=37,
+            text=dictionery[self.language]["update_graph"],
+            font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
+            command=self.update_graph
+        )
+        self.update_graph_button.grid(row=2, column=0, pady=20, padx=10)
 
         self.language_mode_label = ctk.CTkLabel(
             self.left_menu,
@@ -160,7 +170,7 @@ class App(ctk.CTk):
             anchor="w"
         )
         self.temperature_label.grid(row=0, column=0, padx=2, pady=0, sticky="w")
-
+        self.entry_frame.grid_columnconfigure(1, weight=1)
         self.temperature = ctk.CTkEntry(self.entry_frame, placeholder_text="6.58")
         self.temperature.grid(row=0, column=1, padx=5, pady=(0, 3), sticky="ew")
 
@@ -191,7 +201,7 @@ class App(ctk.CTk):
         )
         self.general_diffuse_flows_label.grid(row=3, column=0, padx=2, pady=0, sticky="w")
 
-        self.general_diffuse_flows = ctk.CTkEntry(self.entry_frame, placeholder_text="208.8")
+        self.general_diffuse_flows = ctk.CTkEntry(self.entry_frame, placeholder_text="28.8")
         self.general_diffuse_flows.grid(row=3, column=1, padx=5, pady=(0, 3), sticky="ew")
 
         self.diffuse_flows_label = ctk.CTkLabel(
@@ -250,6 +260,7 @@ class App(ctk.CTk):
 
         self.result_label = ctk.CTkLabel(
             self.label_frame,
+            anchor='w',
             fg_color=["#F7F7F7", "gray17"],
             wraplength=500,
             text=dictionery[self.language]["result"]
@@ -260,7 +271,7 @@ class App(ctk.CTk):
         self.graph_frame = ctk.CTkFrame(self)
         self.graph_frame.grid(row=3, column=1, pady=20, padx=20, sticky="nsew")
 
-        self.fig = Figure(figsize=(5, 5), dpi=90)
+        self.fig = Figure(figsize=(5, 5), dpi=87)
         self.plot1 = self.fig.add_subplot(1, 1, 1)
 
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.graph_frame)
@@ -277,26 +288,44 @@ class App(ctk.CTk):
 
         self.update_texts()
 
-        self.update_graph_button = ctk.CTkButton(
-            self.center_frame,
-            text=dictionery[self.language]["update_graph"],
-            font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
-            command=self.update_graph
-        )
-        self.update_graph_button.grid(row=2, column=1, pady=7, padx=7)
+    def show_instruction(self):
+        instruction_window = ctk.CTkToplevel(self)
+        instruction_window.title("PowerCast_Instruction")
+        instruction_window.geometry("400x300")
+        instruction_window.grab_set()
 
-    def update_graph(self):
+        instruction_textbox = ctk.CTkTextbox(
+            instruction_window,
+            width=360,
+            height=260,
+            fg_color="transparent",
+            border_width=0,
+            wrap="word", 
+            font=("Arial", 12),
+        )
+        instruction_textbox.pack(pady=10, padx=10, fill="both", expand=True)
+
+        instruction_textbox.insert("1.0", (
+            "Witamy w aplikacji PowerCast!\n\n"
+            "Aby rozpocząć korzystanie z aplikacji, przeczytaj instrukcje:\n\n"
+            "1. Wprowadź dane pogodowe na podstawie podpowiedzi w polu, w którym zapisany jest akceptowalny format.\n\n"
+            "2. Wybierz odpowiednie strefy: możesz wybrać strefę 1, strefy 2 i 3, lub wszystkie 3!\n\n"
+            "3. Kliknij przycisk 'Przewiduj' i poczekaj na wyniki w polu 'Wynik przewidywania'.\n\n"
+            "4. Kliknij przycisk „Aktualizuj wykres”, aby wyświetlić wykres ze zaktualizowanymi informacjami."
+        ))
+
+        instruction_textbox.configure(state="disabled")
+
+
+    def update_graph(self, selected_zones):
         """
-        Read data from the CSV file and display it in a monthly average line graph.
+        Update the graph to display only the selected zones.
         """
         try:
             dataframe = pd.read_csv(csv_path, parse_dates=["Datetime"])
             dataframe["Datetime"] = pd.to_datetime(dataframe["Datetime"], errors="coerce")
 
-            print("Unique Dates in Original Data:", dataframe["Datetime"].dt.year.unique())
-
             dataframe["MonthYear"] = dataframe["Datetime"].dt.strftime("%m.%y")
-            print("Unique MonthYear after formatting:", dataframe["MonthYear"].unique())
 
             grouped = (
                 dataframe.groupby("MonthYear")[
@@ -305,32 +334,34 @@ class App(ctk.CTk):
                 .mean()
                 .reset_index()
             )
-            print("Grouped Data after mean calculation:", grouped.head())
 
             grouped["MonthYear"] = pd.to_datetime(grouped["MonthYear"], format="%m.%y")
             grouped = grouped.sort_values("MonthYear")
-            print("Unique MonthYear after datetime conversion:", grouped["MonthYear"].unique())
 
             self.plot1.clear()
 
-            self.plot1.plot(
-                grouped["MonthYear"],
-                grouped["PowerConsumption_Zone1"],
-                label="Zone 1",
-                color="#66CAB3"
-            )
-            self.plot1.plot(
-                grouped["MonthYear"],
-                grouped["PowerConsumption_Zone2"],
-                label="Zone 2",
-                color="#404040"
-            )
-            self.plot1.plot(
-                grouped["MonthYear"],
-                grouped["PowerConsumption_Zone3"],
-                label="Zone 3",
-                color="#21F6D2"
-            )
+            # Plot only the selected zones
+            if 1 in selected_zones:
+                self.plot1.plot(
+                    grouped["MonthYear"],
+                    grouped["PowerConsumption_Zone1"],
+                    label="Zone 1",
+                    color="#66CAB3"
+                )
+            if 2 in selected_zones:
+                self.plot1.plot(
+                    grouped["MonthYear"],
+                    grouped["PowerConsumption_Zone2"],
+                    label="Zone 2",
+                    color="#404040"
+                )
+            if 3 in selected_zones:
+                self.plot1.plot(
+                    grouped["MonthYear"],
+                    grouped["PowerConsumption_Zone3"],
+                    label="Zone 3",
+                    color="#21F6D2"
+                )
 
             self.plot1.set_xlabel("Month and Year")
             self.plot1.set_ylabel("Power Consumption")
@@ -351,6 +382,7 @@ class App(ctk.CTk):
         if hasattr(self, 'language'):
             self.download_button.configure(text=dictionery[self.language]["download_button"])
             self.train_button.configure(text=dictionery[self.language]["train_button"])
+            self.update_graph_button.configure(text=dictionery[self.language]["update_graph"])
             self.language_mode_label.configure(text=dictionery[self.language]["language"])
             self.appearance_mode_label.configure(text=dictionery[self.language]["appearance_mode"])
             self.scaling_label.configure(text=dictionery[self.language]["ui_scale"])
@@ -432,7 +464,7 @@ class App(ctk.CTk):
 
     def predict(self):
         """
-        Gather user inputs, send them to the API for predictions, and display results.
+        Gather user inputs, send them to the API for predictions, and update the graph for selected zones.
         """
         try:
             data = {
@@ -448,18 +480,29 @@ class App(ctk.CTk):
             messagebox.showerror("Error", "Please enter valid numeric values in all fields.")
             return
 
+
         try:
             response = requests.post(
                 "http://localhost:8000/predict",
                 json=data,
-                timeout=5  # add a timeout to avoid indefinite hanging
+                timeout=5  # Add a timeout to avoid indefinite hanging
             )
             response.raise_for_status()
             result = response.json()
-            self.result_label.configure(text=f"{dictionery[self.language]['result']} {result}")
+            predictions = result.get("predictions", {})
+            formatted_result = "\n".join([f"{key}: {value}" for key, value in predictions.items()])
+            self.result_label.configure(text=f"{dictionery[self.language]['result']}\n{formatted_result}")
+
+            # Update graph with selected zones
+            selected_zones = self.get_target_zones()
+            if selected_zones:
+                self.update_graph(selected_zones)
+            else:
+                messagebox.showinfo("No Zones Selected", "Please select at least one zone to display.")
 
         except requests.RequestException as exc:
             messagebox.showerror("API Error", f"Failed to fetch prediction: {exc}")
+
 
     def get_target_zones(self):
         """

@@ -2,7 +2,7 @@ dictionery = {
     "PL":{
         "download_button": "Pobierz CSV",
         "train_button": "Trenuj model",
-         "update_graph": "update graph",
+        "update_graph": "Aktualizuj wykres",
         "language": "Język:",
         "appearance_mode": "Tryb wyglądu:",
         "ui_scale": "Skalowanie UI:",
@@ -24,7 +24,7 @@ dictionery = {
      "ENG":{
         "download_button" : "Download CSV",
         "train_button" : "Train model",
-        "update_graph": "update graph",
+        "update_graph": "Update graph",
         "language" : "Language:",
         "appearance_mode" : "Appearance Mode:",
         "ui_scale" : "UI Scaling:",
@@ -46,7 +46,7 @@ dictionery = {
     "RU":{
         "download_button": "Скачать CSV",
         "train_button": "Обучить модель",
-         "update_graph": "update graph",
+        "update_graph": "Актуализация графика",
         "language": "Язык:",
         "appearance_mode": "Режим отображения:",
         "ui_scale": "Масштаб UI:",
