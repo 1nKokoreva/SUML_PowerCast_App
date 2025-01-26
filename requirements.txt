@@ -14,3 +14,4 @@ pymysql
 seaborn
 wandb
 autogluon.tabular>=1.0.0
+pylint
