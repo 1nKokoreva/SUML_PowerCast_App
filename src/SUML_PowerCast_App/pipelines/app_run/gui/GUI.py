@@ -1,11 +1,13 @@
 import os
 import re
+import pandas as pd
 import tkinter
 import tkinter.messagebox as messagebox
 import customtkinter as ctk
 from PIL import Image, ImageTk 
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.dates as mdates
 from dictionary import dictionery
 import requests
 from datetime import datetime
@@ -22,7 +24,7 @@ class App(ctk.CTk):
 
         self.title("PowerCast_App")
         self.iconbitmap(current_path +"/Assets/iconic.ico")
-        self.geometry(f"{880}x{700}")
+        self.geometry(f"{880}x{800}")
     
         self.grid_rowconfigure((0,1,2), weight=0)  
         self.grid_rowconfigure( 3, weight=1)  
@@ -151,7 +153,7 @@ class App(ctk.CTk):
         self.predict_button.grid(row=2, column=0, columnspan=2, pady=7, padx=7)
 
         self.label_frame = ctk.CTkFrame(self)
-        self.label_frame.grid(row=2, column=1, padx=20, pady=10, sticky="nsew")
+        self.label_frame.grid(row=2, column=1, padx=20, sticky="nsew")
         self.result_label = ctk.CTkLabel(self.label_frame, fg_color=["#F7F7F7", "gray17"], wraplength= 500, text=dictionery[self.language]["result"])
         self.result_label.grid(row=0, column=0, padx=10, pady=10)
                 
@@ -160,24 +162,9 @@ class App(ctk.CTk):
         self.graph_frame.grid(row=3, column=1, pady=20, padx=20, sticky="nsew")
         
         #graph Matplotlib example
-        self.fig = Figure(figsize=(5, 5), dpi=100)
+        self.fig = Figure(figsize=(5, 5), dpi=90)
 
-        # Добавление subplot
         self.plot1 = self.fig.add_subplot(1, 1, 1)
-
-        # Данные для графика
-        x = [1, 2, 3, 4]
-        y1 = [10, 20, 25, 30] 
-        y2 = [5, 15, 22, 27]   
-        y3 = [2, 10, 18, 26]   
-
-        # Построение графиков
-        self.plot1.plot(x, y1, label="Zone 1", color="#66CAB3")
-        self.plot1.plot(x, y2, label="Zone 2", color="#404040")
-        self.plot1.plot(x, y3, label="Zone 3", color="#21F6D2")
-
-        # Легенда
-        self.plot1.legend()
 
         # Создание FigureCanvasTkAgg
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.graph_frame)
@@ -197,10 +184,74 @@ class App(ctk.CTk):
         self.info_label.configure(state="disabled")
         self.update_texts()
 
-        
+        self.update_graph_button = ctk.CTkButton(
+            self.center_frame,
+            text=dictionery[self.language]["update_graph"],
+            font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
+            command=self.update_graph,
+        )
+        self.update_graph_button.grid(row=2, column=1, pady=7, padx=7)
 
+
+    def update_graph(self):
+        """Читает данные из CSV-файла и отображает график."""
+        try:
+            # Чтение данных из CSV-файла
+            df = pd.read_csv(r"C:\Users\koka\Documents\GitHub\SUML_PowerCast_App\data\01_raw\powerconsumption.csv", parse_dates=["Datetime"])
+            df["Datetime"] = pd.to_datetime(df["Datetime"], errors="coerce")
+
+            # Печать уникальных значений дат для проверки
+            print("Unique Dates in Original Data:", df["Datetime"].dt.year.unique())  # Проверяем, есть ли 2025 год в данных
+
+            # Форматирование оси X (месяц.год)
+            df["MonthYear"] = df["Datetime"].dt.strftime("%m.%y")
+
+            # Печать уникальных значений после форматирования
+            print("Unique MonthYear after formatting:", df["MonthYear"].unique())
+
+            # Получаем среднее значение по месяцам для каждой зоны
+            grouped = (
+                df.groupby("MonthYear")[["PowerConsumption_Zone1", "PowerConsumption_Zone2", "PowerConsumption_Zone3"]]
+                .mean()
+                .reset_index()
+            )
+
+            # Печать результатов группировки
+            print("Grouped Data after mean calculation:", grouped.head())  # Выводим первые строки после группировки
+
+            # Преобразование столбца MonthYear в формат datetime для правильного отображения
+            grouped["MonthYear"] = pd.to_datetime(grouped["MonthYear"], format="%m.%y")
+
+            # Сортировка по дате
+            grouped = grouped.sort_values("MonthYear")
+
+            # Печать уникальных значений после преобразования в datetime
+            print("Unique MonthYear after datetime conversion:", grouped["MonthYear"].unique())
+            
+            # Очистка графика
+            self.plot1.clear()
+
+            # Построение графиков для каждой зоны
+            self.plot1.plot(grouped["MonthYear"], grouped["PowerConsumption_Zone1"], label="Zone 1", color="#66CAB3")
+            self.plot1.plot(grouped["MonthYear"], grouped["PowerConsumption_Zone2"], label="Zone 2", color="#404040")
+            self.plot1.plot(grouped["MonthYear"], grouped["PowerConsumption_Zone3"], label="Zone 3", color="#21F6D2")
+
+            # Настройка осей
+            self.plot1.set_xlabel("Month and Year")
+            self.plot1.set_ylabel("Power Consumption")
+            self.plot1.xaxis.set_major_formatter(mdates.DateFormatter("%m.%y"))  # Формат даты: месяц.год
+            self.plot1.xaxis.set_major_locator(mdates.MonthLocator(interval=1))  # Метки каждые 1 месяц
+            self.plot1.tick_params(axis="x", rotation=45)
+
+            # Легенда и перерисовка
+            self.plot1.legend()
+            self.canvas.draw()
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to update graph: {e}")
+
+  
     def update_texts(self):
-    # Обновляем текст всех элементов в интерфейсе
         if hasattr(self, 'language'):
             self.download_button.configure(text=dictionery[self.language]["download_button"])
             self.train_button.configure(text=dictionery[self.language]["train_button"])
@@ -257,10 +308,6 @@ class App(ctk.CTk):
             
         print("The values are correct")
 
-
-    # def slider_event(self, value):
-    #     self.humidity_label.configure(text=f"Humidity: {value:.0f}%")
-
     def change_appearance_mode_event(self, new_appearance_mode: str):
         ctk.set_appearance_mode(new_appearance_mode)
 
@@ -294,6 +341,7 @@ class App(ctk.CTk):
             response.raise_for_status()
             result = response.json()
             self.result_label.configure(text=f"{dictionery[self.language]['result']} {result}")
+            
         except requests.RequestException as e:
             messagebox.showerror("API Error", f"Failed to fetch prediction: {e}")
 
