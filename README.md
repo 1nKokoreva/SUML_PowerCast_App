@@ -10,7 +10,7 @@ Główne założenia obejmują:
 W ramach projektu udało się:
 - Opracować spójny potok przetwarzania danych i trenowania modeli w oparciu o framework Kedro.
 - Zaimplementować skuteczne modele predykcyjne przy użyciu AutoGluon.
-- Zintegrować aplikację Streamlit z potokiem danych.
+- Zintegrować GUI z potokiem danych.
 
 **Instrukcja instalacji i uruchomienia**
 
@@ -28,22 +28,3 @@ W ramach projektu udało się:
    ```bash
    kedro run
    ```
-
-**Struktura potoku**
-
-Potok oparty na Kedro składa się z trzech głównych komponentów:
-
-1. **Data Analysis and Preprocessing:**
-   - Wczytywanie i wstępne przetwarzanie danych surowych.
-   - Normalizacja i transformacja danych wejściowych zgodnie z ustalonymi parametrami.
-
-2. **Model Training and Evaluation:**
-   - Podział danych na zbiory treningowy i testowy.
-   - Trenowanie modeli (m.in. regresja, drzewa decyzyjne).
-   - Ewaluacja wyników modeli.
-
-3. **Application Deployment:**
-   - Uruchamianie API umożliwiającego wykonywanie predykcji na podstawie natrenowanego modelu.
-   - Integracja aplikacji desktopowej z API, umożliwiająca interaktywne wizualizacje i użytkowanie przez końcowych użytkowników.
-
-Potok Kedro zapewnia modularność procesu przetwarzania danych oraz trenowania modeli, umożliwia to łatwą rozbudowę projektu o kolejne funkcjonalności.
