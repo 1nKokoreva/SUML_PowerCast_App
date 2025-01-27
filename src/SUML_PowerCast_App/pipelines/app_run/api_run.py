@@ -15,7 +15,6 @@ from kedro.framework.startup import bootstrap_project
 
 
 class WeatherInput(BaseModel):
-    datetime: str
     temperature: float
     humidity: float
     wind_speed: float
@@ -83,7 +82,7 @@ def getPredictions(input_data: WeatherInput, best_models: Dict[str, TabularPredi
 
     # Insert the prediction data into the database
     data_to_insert = {
-        "Datetime": input_data.datetime,
+        "Datetime": datetime.now().strftime("%m/%d/%Y %H:%M"),
         "Temperature": input_data.temperature,
         "Humidity": input_data.humidity,
         "WindSpeed": input_data.wind_speed,
