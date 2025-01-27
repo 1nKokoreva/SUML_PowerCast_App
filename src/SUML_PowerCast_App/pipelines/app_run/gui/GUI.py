@@ -20,8 +20,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.dates as mdates
 import requests
 
-from dictionary import dictionery
-#from SUML_PowerCast_App.pipelines.app_run.gui.dictionary import dictionery
+from SUML_PowerCast_App.pipelines.app_run.gui.dictionary import dictionery
 
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
