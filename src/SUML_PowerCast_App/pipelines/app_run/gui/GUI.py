@@ -14,13 +14,14 @@ from datetime import datetime
 
 import pandas as pd
 import customtkinter as ctk
-from PIL import Image  # Removed ImageTk since it's unused
+from PIL import Image
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.dates as mdates
 import requests
 
-from SUML_PowerCast_App.pipelines.app_run.gui.dictionary import dictionery
+from dictionary import dictionery
+#from SUML_PowerCast_App.pipelines.app_run.gui.dictionary import dictionery
 
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -490,8 +491,17 @@ class App(ctk.CTk):
             response.raise_for_status()
             result = response.json()
             predictions = result.get("predictions", {})
-            formatted_result = "\n".join([f"{key}: {value}" for key, value in predictions.items()])
-            self.result_label.configure(text=f"{dictionery[self.language]['result']}\n{formatted_result}")
+
+            # Format the predictions
+            formatted_result = "Wynik przewidywania:\n"
+            for zone, value in predictions.items():
+                zone_name = zone.replace("PowerConsumption_", "")
+                if isinstance(value, list) and len(value) > 0:
+                    value = value[0]
+                formatted_result += f"{zone_name}: {int(value)}W\n"
+
+            self.result_label.configure(text=formatted_result)
+
 
             # Update graph with selected zones
             selected_zones = self.get_target_zones()
