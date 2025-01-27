@@ -54,7 +54,7 @@ def append_to_csv(file_path, data):
 def getPredictions(input_data: WeatherInput, best_models: Dict[str, TabularPredictor]):
     # Prepare data for prediction
     X_new = pd.DataFrame([{
-        "Datetime": input_data.datetime,
+        "Datetime": datetime.now().strftime("%m/%d/%Y %H:%M"),
         "Temperature": input_data.temperature,
         "Humidity": input_data.humidity,
         "WindSpeed": input_data.wind_speed,
