@@ -6,7 +6,9 @@ communicates with a FastAPI endpoint to retrieve predictions.
 
 import os
 import re
+import shutil
 import tkinter
+from tkinter import filedialog
 import tkinter.messagebox as messagebox
 from datetime import datetime
 
@@ -20,7 +22,6 @@ import requests
 
 from dictionary import dictionery
 
-# pylint: disable=too-many-instance-attributes, too-many-statements
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 csv_path = os.path.join(
@@ -75,7 +76,7 @@ class App(ctk.CTk):
             height=37,
             text=dictionery[self.language]["download_button"],
             font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
-            command=self.sidebar_button_event
+            command=self.download_dataset
         )
         self.download_button.grid(row=0, column=0, padx=20, pady=10)
 
@@ -84,7 +85,7 @@ class App(ctk.CTk):
             height=37,
             text=dictionery[self.language]["train_button"],
             font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
-            command=self.sidebar_button_event
+            command=self.train_model
         )
         self.train_button.grid(row=1, column=0, padx=20, pady=10)
 
@@ -468,7 +469,6 @@ class App(ctk.CTk):
         """
         try:
             data = {
-                "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "temperature": float(self.temperature.get()),
                 "humidity": float(self.humidity.get()),
                 "wind_speed": float(self.wind_speed.get()),
@@ -503,6 +503,23 @@ class App(ctk.CTk):
         except requests.RequestException as exc:
             messagebox.showerror("API Error", f"Failed to fetch prediction: {exc}")
 
+    def train_model(self):
+        """
+        Send a request to the API to train the model.
+        """
+        try:
+            
+
+            response = requests.get(
+                "http://localhost:8000/update",
+                timeout=300
+            )
+            response.raise_for_status()
+
+            messagebox.showinfo("Training Complete")
+
+        except requests.RequestException as exc:
+            messagebox.showerror("Training Error", f"Failed to train the model: {exc}")
 
     def get_target_zones(self):
         """
@@ -516,6 +533,23 @@ class App(ctk.CTk):
         if self.zone_3_var.get():
             zones.append(3)
         return zones
+    
+    def download_dataset(self):
+        """
+        Метод для скачивания CSV файла.
+        """
+        try:
+            file_path = filedialog.asksaveasfilename(
+                defaultextension=".csv",
+                filetypes=[("CSV files", "*.csv")],
+                title="Save CSV file"
+            )
+
+            if file_path:
+                shutil.copy(csv_path, file_path)
+                messagebox.showinfo("Success", f"File saved successfully at {file_path}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to save file: {e}")
 
 
 if __name__ == "__main__":
