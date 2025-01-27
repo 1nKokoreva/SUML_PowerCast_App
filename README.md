@@ -26,5 +26,5 @@ W ramach projektu udało się:
 
 3. **Uruchamianie potoku Kedro:**
    ```bash
-   kedro run
+   python app_run.py
    ```

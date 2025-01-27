@@ -20,7 +20,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.dates as mdates
 import requests
 
-from dictionary import dictionery
+from SUML_PowerCast_App.pipelines.app_run.gui.dictionary import dictionery
 
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -508,15 +508,13 @@ class App(ctk.CTk):
         Send a request to the API to train the model.
         """
         try:
-            
-
             response = requests.get(
                 "http://localhost:8000/update",
                 timeout=300
             )
             response.raise_for_status()
 
-            messagebox.showinfo("Training Complete")
+            messagebox.showinfo("Complete", "Your model has been trained")
 
         except requests.RequestException as exc:
             messagebox.showerror("Training Error", f"Failed to train the model: {exc}")
