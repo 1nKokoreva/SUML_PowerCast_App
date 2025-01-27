@@ -14,3 +14,7 @@ pymysql
 seaborn
 wandb
 autogluon.tabular>=1.0.0
+pylint
+customtkinter==5.2.2
+Pillow==11.1.0
+requests==2.32.3
