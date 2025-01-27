@@ -7,19 +7,12 @@ from typing import Optional, Dict, List
 from autogluon.tabular import TabularPredictor
 from multiprocessing import Process
 from datetime import datetime
-import pymysql
 import uvicorn
 from kedro.framework.hooks import _create_hook_manager
 from kedro.config import OmegaConfigLoader
 from kedro.framework.session import KedroSession
 from kedro.framework.startup import bootstrap_project
-DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "admin",
-    "database": "PCP",
-    "charset": "utf8mb4",
-}
+
 
 class WeatherInput(BaseModel):
     datetime: str
@@ -58,32 +51,6 @@ def append_to_csv(file_path, data):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"File operation error: {str(e)}")
 
-
-def insert_into_database(data):
-        """
-        Inserts prediction data into the database using pymysql.
-        """
-        query = """
-        INSERT INTO powerconsumption (
-            Datetime, Temperature, Humidity, WindSpeed, GeneralDiffuseFlows, DiffuseFlows, 
-            PowerConsumption_Zone1, PowerConsumption_Zone2, PowerConsumption_Zone3
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """
-        values = (
-            data["Datetime"], data["Temperature"], data["Humidity"], data["WindSpeed"],
-            data["GeneralDiffuseFlows"], data["DiffuseFlows"],
-            data["PowerConsumption_Zone1"], data["PowerConsumption_Zone2"], data["PowerConsumption_Zone3"]
-        )
-
-        try:
-            connection = pymysql.connect(**DB_CONFIG)
-            with connection.cursor() as cursor:
-                cursor.execute(query, values)
-            connection.commit()
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-        finally:
-            connection.close()
 
 def getPredictions(input_data: WeatherInput, best_models: Dict[str, TabularPredictor]):
     # Prepare data for prediction
@@ -129,14 +96,11 @@ def getPredictions(input_data: WeatherInput, best_models: Dict[str, TabularPredi
 
 
     append_to_csv("data/01_raw/powerconsumption.csv", data_to_insert)
-    #insert_into_database(data_to_insert)
 
     return {"predictions": predictions}
 
 def start_api(best_models: Dict[str, TabularPredictor]):
-    """
-    Starts the FastAPI server. This function is meant to be run in a separate process.
-    """
+
     if not best_models or not all(isinstance(model, TabularPredictor) for model in best_models.values()):
         raise ValueError("Invalid or missing models for the API.")
     
