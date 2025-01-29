@@ -396,15 +396,10 @@ class App(ctk.CTk):
     
     def train_process(self):
         """Обработчик для кнопки тренировки модели"""
-        self.start_process_info()  
+        messagebox.showinfo("Start process", "Please wait a bit. The process will take some time...") 
         self.train_model()  
 
-    def start_process_info(self):
-        messagebox.showinfo("Start process", "Please wait a bit. The process will take some time...")
 
-    def predict_process(self):
-        self.start_process_info()  
-        self.predict()
 
     def train_model(self): 
         """
