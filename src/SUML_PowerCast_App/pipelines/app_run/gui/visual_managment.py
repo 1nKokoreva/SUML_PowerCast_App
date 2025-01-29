@@ -39,7 +39,7 @@ def update_graph(plot1, canvas, selected_zones):
         Update the graph to display only the selected zones.
         """
         try:
-            dataframe = pd.read_csv(r"C:\Users\koka\Documents\GitHub\SUML_PowerCast_App\data\01_raw\powerconsumption.csv", parse_dates=["Datetime"])
+            dataframe = pd.read_csv(r"data\01_raw\powerconsumption.csv", parse_dates=["Datetime"])
             dataframe["Datetime"] = pd.to_datetime(dataframe["Datetime"], errors="coerce")
 
             dataframe["MonthYear"] = dataframe["Datetime"].dt.strftime("%m.%y")
