@@ -240,7 +240,7 @@ class App(ctk.CTk):
             height=37,
             text=dictionery[self.language]["predict_button"],
             font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
-            command=self.predict_process
+            command=self.predict
         )
         self.predict_button.grid(row=2, column=0, columnspan=2, pady=7, padx=7)
 
