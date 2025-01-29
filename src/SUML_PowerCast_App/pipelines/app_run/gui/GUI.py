@@ -3,25 +3,20 @@ This module defines the main GUI (Graphical User Interface) for the PowerCast ap
 It uses tkinter/customtkinter for the desktop interface, Matplotlib for plots, and
 communicates with a FastAPI endpoint to retrieve predictions.
 """
-
 import os
-import re
 import shutil
 import tkinter
 from tkinter import filedialog
 import tkinter.messagebox as messagebox
-from datetime import datetime
 
-import pandas as pd
 import customtkinter as ctk
 from PIL import Image
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import matplotlib.dates as mdates
 import requests
 
 from SUML_PowerCast_App.pipelines.app_run.gui.dictionary import dictionery
-
+from SUML_PowerCast_App.pipelines.app_run.gui.visual_managment import show_instruction, update_graph, change_scaling_event, check_number_format
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 csv_path = os.path.join(
@@ -44,11 +39,12 @@ class App(ctk.CTk):
         Initialize the GUI components and set up the main interface layout.
         """
         super().__init__()
-        self.show_instruction()
+
+        show_instruction()
 
         self.title("PowerCast_App")
         self.iconbitmap(os.path.join(CURRENT_PATH, "Assets", "iconic.ico"))
-        self.geometry(f"{880}x{800}")
+        self.geometry(f"{900}x{800}")
 
         self.grid_rowconfigure((0, 1, 2), weight=0)
         self.grid_rowconfigure(3, weight=1)
@@ -85,18 +81,10 @@ class App(ctk.CTk):
             height=37,
             text=dictionery[self.language]["train_button"],
             font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
-            command=self.train_model
+            command=self.train_process
         )
         self.train_button.grid(row=1, column=0, padx=20, pady=10)
 
-        self.update_graph_button = ctk.CTkButton(
-            self.left_menu,
-            height=37,
-            text=dictionery[self.language]["update_graph"],
-            font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
-            command=self.update_graph
-        )
-        self.update_graph_button.grid(row=2, column=0, pady=20, padx=10)
 
         self.language_mode_label = ctk.CTkLabel(
             self.left_menu,
@@ -142,7 +130,7 @@ class App(ctk.CTk):
             self.left_menu,
             values=["80%", "90%", "100%", "110%", "120%"],
             font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
-            command=self.change_scaling_event
+            command=change_scaling_event
         )
         self.scaling_optionemenu.grid(row=10, column=0, padx=20, pady=10)
 
@@ -161,7 +149,7 @@ class App(ctk.CTk):
         )
         self.info_label.grid(row=0, column=0, columnspan=2, padx=7, pady=7, sticky="new")
 
-        # Entry frame
+        # Entry frames
         self.entry_frame = ctk.CTkFrame(self.center_frame, fg_color="transparent", border_width=0, height=150)
         self.entry_frame.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
@@ -252,7 +240,7 @@ class App(ctk.CTk):
             height=37,
             text=dictionery[self.language]["predict_button"],
             font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
-            command=self.predict
+            command=self.predict_process
         )
         self.predict_button.grid(row=2, column=0, columnspan=2, pady=7, padx=7)
 
@@ -272,7 +260,7 @@ class App(ctk.CTk):
         self.graph_frame = ctk.CTkFrame(self)
         self.graph_frame.grid(row=3, column=1, pady=20, padx=20, sticky="nsew")
 
-        self.fig = Figure(figsize=(5, 5), dpi=87)
+        self.fig = Figure(figsize=(5, 5), dpi=85)
         self.plot1 = self.fig.add_subplot(1, 1, 1)
 
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.graph_frame)
@@ -287,94 +275,31 @@ class App(ctk.CTk):
         self.info_label.insert("1.0", dictionery[self.language]["info_text"])
         self.info_label.configure(state="disabled")
 
-        self.update_texts()
+        
 
-    def show_instruction(self):
-        instruction_window = ctk.CTkToplevel(self)
-        instruction_window.title("PowerCast_Instruction")
-        instruction_window.geometry("400x300")
-        instruction_window.grab_set()
-
-        instruction_textbox = ctk.CTkTextbox(
-            instruction_window,
-            width=360,
-            height=260,
-            fg_color="transparent",
-            border_width=0,
-            wrap="word", 
-            font=("Arial", 12),
-        )
-        instruction_textbox.pack(pady=10, padx=10, fill="both", expand=True)
-
-        instruction_textbox.insert("1.0", (
-            "Witamy w aplikacji PowerCast!\n\n"
-            "Aby rozpocząć korzystanie z aplikacji, przeczytaj instrukcje:\n\n"
-            "1. Wprowadź dane pogodowe na podstawie podpowiedzi w polu, w którym zapisany jest akceptowalny format.\n\n"
-            "2. Wybierz odpowiednie strefy: możesz wybrać strefę 1, strefy 2 i 3, lub wszystkie 3!\n\n"
-            "3. Kliknij przycisk 'Przewiduj' i poczekaj na wyniki w polu 'Wynik przewidywania'.\n\n"
-            "4. Kliknij przycisk „Aktualizuj wykres”, aby wyświetlić wykres ze zaktualizowanymi informacjami."
-        ))
-
-        instruction_textbox.configure(state="disabled")
-
-
-    def update_graph(self, selected_zones):
-        """
-        Update the graph to display only the selected zones.
-        """
+    def validate_fields(self):
         try:
-            dataframe = pd.read_csv(csv_path, parse_dates=["Datetime"])
-            dataframe["Datetime"] = pd.to_datetime(dataframe["Datetime"], errors="coerce")
+            print("Temperature:", self.temperature.get())
+            print("Wind Speed:", self.wind_speed.get())
+            print("General Diffuse Flows:", self.general_diffuse_flows.get())
+            print("Diffuse Flows:", self.diffuse_flows.get())
 
-            dataframe["MonthYear"] = dataframe["Datetime"].dt.strftime("%m.%y")
-
-            grouped = (
-                dataframe.groupby("MonthYear")[
-                    ["PowerConsumption_Zone1", "PowerConsumption_Zone2", "PowerConsumption_Zone3"]
-                ]
-                .mean()
-                .reset_index()
+            # Вызов проверки
+            check_number_format(
+                self.temperature.get(),
+                self.wind_speed.get(),
+                self.general_diffuse_flows.get(),
+                self.diffuse_flows.get(),
             )
-
-            grouped["MonthYear"] = pd.to_datetime(grouped["MonthYear"], format="%m.%y")
-            grouped = grouped.sort_values("MonthYear")
-
-            self.plot1.clear()
-
-            # Plot only the selected zones
-            if 1 in selected_zones:
-                self.plot1.plot(
-                    grouped["MonthYear"],
-                    grouped["PowerConsumption_Zone1"],
-                    label="Zone 1",
-                    color="#66CAB3"
-                )
-            if 2 in selected_zones:
-                self.plot1.plot(
-                    grouped["MonthYear"],
-                    grouped["PowerConsumption_Zone2"],
-                    label="Zone 2",
-                    color="#404040"
-                )
-            if 3 in selected_zones:
-                self.plot1.plot(
-                    grouped["MonthYear"],
-                    grouped["PowerConsumption_Zone3"],
-                    label="Zone 3",
-                    color="#21F6D2"
-                )
-
-            self.plot1.set_xlabel("Month and Year")
-            self.plot1.set_ylabel("Power Consumption")
-            self.plot1.xaxis.set_major_formatter(mdates.DateFormatter("%m.%y"))
-            self.plot1.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
-            self.plot1.tick_params(axis="x", rotation=45)
-
-            self.plot1.legend()
-            self.canvas.draw()
-
-        except Exception as exc:
-            messagebox.showerror("Error", f"Failed to update graph: {exc}")
+            print("All fields validated successfully!")
+        except AttributeError as e:
+            print(f"AttributeError: {e}")
+            messagebox.showerror("ERROR", "An attribute is missing. Please check all fields.")
+        except ValueError:
+            pass
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+            messagebox.showerror("ERROR", "An unexpected error occurred.")
 
     def update_texts(self):
         """
@@ -383,7 +308,6 @@ class App(ctk.CTk):
         if hasattr(self, 'language'):
             self.download_button.configure(text=dictionery[self.language]["download_button"])
             self.train_button.configure(text=dictionery[self.language]["train_button"])
-            self.update_graph_button.configure(text=dictionery[self.language]["update_graph"])
             self.language_mode_label.configure(text=dictionery[self.language]["language"])
             self.appearance_mode_label.configure(text=dictionery[self.language]["appearance_mode"])
             self.scaling_label.configure(text=dictionery[self.language]["ui_scale"])
@@ -404,6 +328,8 @@ class App(ctk.CTk):
             self.info_label.insert("1.0", dictionery[self.language]["info_text"])
             self.info_label.configure(state="disabled")
 
+
+
     def change_language(self, new_language: str):
         """
         Change the current language and update all texts.
@@ -411,57 +337,13 @@ class App(ctk.CTk):
         self.language = new_language
         self.update_texts()
 
-    def check_number_format(self):
-        """
-        Validate numeric entries for temperature, wind speed, etc. against a simple regex.
-        """
-        pattern = r"^\d{1,3}([.]\d{1,3})?$"
-
-        fields = {
-            "temperature": (self.temperature.get(), "Temperature"),
-            "wind_speed": (self.wind_speed.get(), "Wind Speed (m/s)"),
-            "general_diffuse_flows": (self.general_diffuse_flows.get(), "General Diffuse Flows"),
-            "diffuse_flows": (self.diffuse_flows.get(), "Diffuse Flows"),
-        }
-
-        for _, (value, label) in fields.items():
-            if not value.strip():
-                messagebox.showerror(
-                    "ERROR",
-                    message=f'The "{label}" field is empty. Please enter a value.'
-                )
-                return
-
-            if not re.match(pattern, value):
-                messagebox.showerror(
-                    "ERROR",
-                    message=(
-                        f'The input value in the "{label}" field does not match '
-                        'the required numeric pattern.'
-                    )
-                )
-                return
-
-        print("The values are correct")
-
+    
     def change_appearance_mode_event(self, new_appearance_mode: str):
         """
         Change the appearance mode (light/dark).
         """
         ctk.set_appearance_mode(new_appearance_mode)
 
-    def change_scaling_event(self, new_scaling: str):
-        """
-        Adjust the scaling of the UI elements.
-        """
-        new_scaling_float = int(new_scaling.replace("%", "")) / 100
-        ctk.set_widget_scaling(new_scaling_float)
-
-    def sidebar_button_event(self):
-        """
-        Handle sidebar button clicks (e.g., 'Download' or 'Train' buttons).
-        """
-        print("Sidebar button clicked")
 
     def predict(self):
         """
@@ -505,14 +387,26 @@ class App(ctk.CTk):
             # Update graph with selected zones
             selected_zones = self.get_target_zones()
             if selected_zones:
-                self.update_graph(selected_zones)
+                update_graph(self.plot1, self.canvas, selected_zones)
             else:
                 messagebox.showinfo("No Zones Selected", "Please select at least one zone to display.")
 
         except requests.RequestException as exc:
             messagebox.showerror("API Error", f"Failed to fetch prediction: {exc}")
+    
+    def train_process(self):
+        """Обработчик для кнопки тренировки модели"""
+        self.start_process_info()  
+        self.train_model()  
 
-    def train_model(self):
+    def start_process_info(self):
+        messagebox.showinfo("Start process", "Please wait a bit. The process will take some time...")
+
+    def predict_process(self):
+        self.start_process_info()  
+        self.predict()
+
+    def train_model(self): 
         """
         Send a request to the API to train the model.
         """
@@ -527,6 +421,8 @@ class App(ctk.CTk):
 
         except requests.RequestException as exc:
             messagebox.showerror("Training Error", f"Failed to train the model: {exc}")
+
+
 
     def get_target_zones(self):
         """
@@ -543,7 +439,7 @@ class App(ctk.CTk):
     
     def download_dataset(self):
         """
-        Метод для скачивания CSV файла.
+        The method for downloading a CSV file.        
         """
         try:
             file_path = filedialog.asksaveasfilename(
